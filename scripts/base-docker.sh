@@ -1,6 +1,6 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-PROJ_DIR="$( realpath $DIR/.. )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+PROJ_DIR="$(realpath $DIR/..)"
 
 IMG_TAG=$(git log --format="%H" -n 1 | awk '{print substr($0,1,7)}')
 

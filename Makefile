@@ -19,3 +19,7 @@ build-docker: ## build docker
 push-docker: ## push docker
 	./scripts/push-docker.sh
 
+.PHONY: run-docker
+run-docker: ## run docker
+	./scripts/run-docker.sh
+

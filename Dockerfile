@@ -4,15 +4,13 @@
 FROM ruby:3.1.2-alpine AS dependencies
 
 # Install system dependencies required to build some Ruby gems (pg)
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apk \
-      ln -vs /var/cache/apk /etc/apk/cache && \
-      apk add --update \
+RUN apk add --update --no-cache \
       build-base
 
 COPY Gemfile Gemfile.lock ./
 
 # Install gems (excluding development/test dependencies)
-RUN --mount=type=cache,sharing=locked,target=/usr/local/bundle/cache \
+RUN --mount=type=cache,target=/usr/local/bundle/cache \
       bundle config set without "development test" && \
       bundle install --jobs=5 --retry=5
 
@@ -26,9 +24,7 @@ ENV RACK_ENV=production
 RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
       echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apk \
-      ln -vs /var/cache/apk /etc/apk/cache && \
-      apk add --update \
+RUN apk add --update --no-cache \
       tzdata \
       kubectl \
       jq

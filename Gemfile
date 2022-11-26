@@ -4,10 +4,10 @@ source 'https://rubygems.org'
 
 gem 'puma', '~> 6.0'
 gem 'sinatra', '~> 3.0'
-gem 'sinatra-contrib', '~> 3.0'
 
 gem 'fuzzy_match', '~> 2.1'
 gem 'rufus-scheduler', '~> 3.8'
+gem 'zache', '~> 0.12.0'
 
 group(:development) do
   gem 'debug', '~> 1.6'

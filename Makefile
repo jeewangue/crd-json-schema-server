@@ -23,3 +23,6 @@ push-docker: ## push docker
 run-docker: ## run docker
 	./scripts/run-docker.sh
 
+.PHONY: dev
+dev: ## watch files and reload rackup
+	@bundle exec rerun puma

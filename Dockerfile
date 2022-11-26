@@ -1,17 +1,24 @@
-# This stage will be responsible for installing gems
-FROM ruby:2.7.6-alpine AS dependencies
+# syntax = docker/dockerfile:1.4
+
+################# dependencies ##############
+FROM ruby:3.1.2-alpine AS dependencies
 
 # Install system dependencies required to build some Ruby gems (pg)
-RUN apk add --update build-base
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apk \
+      ln -vs /var/cache/apk /etc/apk/cache && \
+      apk add --update \
+      build-base
 
 COPY Gemfile Gemfile.lock ./
 
 # Install gems (excluding development/test dependencies)
-RUN bundle config set without "development test" && \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/bundle/cache \
+      bundle config set without "development test" && \
       bundle install --jobs=5 --retry=5
 
-# We're back at the base stage
-FROM ruby:2.7.6-alpine AS runtime
+
+################# runtime ####################
+FROM ruby:3.1.2-alpine AS runtime
 
 ENV TZ=Asia/Seoul
 ENV RACK_ENV=production
@@ -19,7 +26,9 @@ ENV RACK_ENV=production
 RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
       echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
-RUN apk add --update --no-cache \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apk \
+      ln -vs /var/cache/apk /etc/apk/cache && \
+      apk add --update \
       tzdata \
       kubectl \
       jq
@@ -36,11 +45,15 @@ WORKDIR /home/app
 # Copy over gems from the dependencies stage
 COPY --from=dependencies /usr/local/bundle/ /usr/local/bundle/
 
-# Finally, copy over the code
-# This is where the .dockerignore file comes into play
-# Note that we have to use `--chown` here
-COPY --chown=app . ./
+# Copy rackup files
+COPY --chown=app Gemfile Gemfile.lock config.ru ./
 
-# Launch the server (or run some other Ruby command)
-CMD ["bundle", "exec", "rackup"]
+# Copy config files
+COPY --chown=app config ./config
+
+# Copy src files
+COPY --chown=app src ./src
+
+# Launch the server
+CMD ["bundle", "exec", "puma", "-t", "8:32"]
 

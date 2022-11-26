@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+    environment:
+      KUBECONFIG: /kube/config
+      PORT: 9999
+    ports:
+      - 9999:9999
+    volumes:
+      - ./test/kubeconfig:/kube/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

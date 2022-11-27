@@ -12,4 +12,3 @@ LOG = Logger.new($stdout)
 CRD = CrdRefresher.new
 
 use Rack::Logger, Logger::DEBUG
-use Rack::ContentType, 'application/json'

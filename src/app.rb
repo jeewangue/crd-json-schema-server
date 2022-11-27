@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'English'
 
 get '/' do
-  return 200, { status: 'OK' }.to_json
+  json status: 'OK'
 end
 
 get '/healthz' do
-  return 200, { status: 'OK' }.to_json
+  json status: 'OK'
 end
 
 get '/crds' do
-  return 200, CRD.names.to_json
+  json CRD.names
 end
 
 get '/crds/:name' do
@@ -33,5 +34,5 @@ get '/crds/:name' do
     halt 500, { error: e.message }.to_json
   end
 
-  return 200, resp
+  json JSON.parse(resp)
 end

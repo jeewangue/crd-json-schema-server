@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crd-json-schema-server
+spec:
+  replicas: 1
+  template:
+    spec:
+      serviceAccountName: crd-json-schema-server
+      containers:
+      - name: server
+        image: jeewangue/crd-json-schema-server
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+          - name: http
+            protocol: TCP
+            containerPort: 9292
